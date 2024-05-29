@@ -1,0 +1,17 @@
+FROM golang:latest AS builder
+ARG CICD_TOKEN
+ADD . /observability
+WORKDIR /observability/service
+
+ENV GOPRIVATE=*.eng.narayan.com
+RUN git config --global credential.helper store
+# RUN echo "https://gitlab-ci-token:${CICD_TOKEN}@gitlab.eng.narayan.com"  >> ~/.git-credentials
+
+RUN [ -d /observability/service/bin ] || mkdir /observability/service/bin
+ENV GOBIN=/observability/service/bin
+RUN cat /etc/os-release
+RUN go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+RUN go mod download
+RUN make build
+CMD ["make","test"]
