@@ -5,6 +5,12 @@
 ## Route 53
 
 * [Route53 Questions](https://datavalley.ai/amazon-route-53-interview-questions/) 
+* [𝐀𝐖𝐒 𝐑𝐨𝐮𝐭𝐞𝟓𝟑 𝐒𝐞𝐫𝐯𝐢𝐜𝐞 𝐈𝐧𝐭𝐞𝐫𝐯𝐢𝐞𝐰 𝐐𝐮𝐞𝐬𝐭𝐢𝐨𝐧𝐬 & 𝐀𝐧𝐬𝐰𝐞𝐫𝐬](https://medium.com/@nbkumar2103/-773e22f39562)
+
+## AWS EKS 
+
+[𝐀𝐖𝐒 𝐄𝐊𝐒 𝐒𝐞𝐫𝐯𝐢𝐜𝐞 𝐈𝐧𝐭𝐞𝐫𝐯𝐢𝐞𝐰 𝐐𝐮𝐞𝐬𝐭𝐢𝐨𝐧𝐬 & 𝐀𝐧𝐬𝐰𝐞𝐫𝐬](https://medium.com/@nbkumar2103/-983d1e9d7f4d)
+
 
 ## AWS S3 
 
