@@ -19,3 +19,10 @@ The second option is using the Lua script. There is an HTTP filter in Envoy that
 The last option is Wasm-based filters. We write the filter as a separate Wasm module with this option, and Envoy loads it dynamically at run time.
 
 In the upcoming modules, we’ll learn more about the Lua and Wasm filters.
+
+# Extending Envoy
+
+1. [Lua Filter](./lua_filter.md)
+2. [WASM Filter](./WebAssembly.md)
+3. [WASM Filter in Go](./using_wasm_and_go.md)
+4. [Lua Filter Lab](./using_lua_lab.md)

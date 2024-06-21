@@ -22,3 +22,14 @@ Be careful when enabling the administrative interface. Anyone with access to the
 Until that work is completed, access to the admin interface should be allowed only via a secure network and only from hosts attached to that secure network. We have an option of allowing access to the admin interface via localhost only, as shown in the above configuration. Alternatively, if you decide to allow access from remote hosts, then make sure you also set up firewall rules.
 
 In the upcoming lessons, we’ll look at the different features of the admin interface in more detail.
+
+## Modules 
+
+1. [Clusters](clusters.md)
+2. [Configuration Dump ](./configuration_dump.md)
+3. [Health Check](./health_check.md)
+4. [Listener and Listener draining](./listener_and_listener_draining.md)
+5. [Logging ](./logging.md)
+6. [Statistics](./statistics.md)
+7. [Tap Filter ](tap_filters.md)
+8. [HTTP Filter Lab](./use_http1_filters_lab.md)
