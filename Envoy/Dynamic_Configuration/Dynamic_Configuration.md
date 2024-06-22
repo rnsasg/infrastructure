@@ -1,0 +1,27 @@
+## Dynamic Configuration
+One of the powerful features of Envoy is the support for dynamic configuration. Up until now, we’ve been using static configuration. We’ve specified the listeners, clusters, routes, and other resources as static resources using the static_resources field.
+
+When using the dynamic configuration, we don’t need to restart the Envoy process to take effect. Instead, Envoy dynamically reloads the configuration by reading it from files on the disk or over the network. The dynamic configuration uses so-called discovery service APIs that point to specific parts of the configuration. Collectively, these APIs are also referred to as xDS. When using xDS, Envoy calls out to external gRPC/REST-based configuration providers that implement the discovery service APIs to retrieve the configuration.
+
+The external gRPC/REST-based configuration provider is also called a control plane. When using files on disk, we don’t need a control plane. Envoy ships with a Golang implementation of the control plane, but Java and other implementations of control plane are also used.
+
+There are multiple discovery service APIs within Envoy. All of them are described in the table below.
+
+| Discovery service name                          | Description                                                                                                                                                                                                                             |
+|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Listener discovery service (LDS)                | Using LDS, Envoy can discover listeners at runtime, including all filter stacks, HTTP filters, and references to RDS.                                                                                                                   |
+| Extension config discovery service (ECDS)       | Using ECDS, Envoy can fetch extension configuration (e.g., HTTP filter configuration) independently from the listener.                                                                                                                  |
+| Route discovery service (RDS)                   | Using RDS, Envoy can discover the entire route configuration for an HTTP connection manager filter at runtime. In combination with EDS and CDS, we can implement complex routing topologies.                                            |
+| Virtual host discovery service (VHDS)           | Using VHDS allows Envoy to request virtual hosts separately from the route configuration. This is used when there is a large number of virtual hosts in a route configuration.                                                          |
+| Scoped route discovery service (SRDS)           | Using SRDS, we can break up the routing table into multiple pieces. This API is used when we have large route tables.                                                                                                                   |
+| Cluster discovery service (CDS)                 | Using CDS, Envoy can discover upstream clusters. Envoy will add, update, or remove the clusters gracefully by draining and reconnecting all existing connection pools. Envoy doesn’t have to be aware of all clusters at initialization time, as we can configure them later using CDS. |
+| Endpoint discovery service (EDS)                | Using EDS, Envoy can discover members of an upstream cluster.                                                                                                                                                                            |
+| Secret discovery service (SDS)                  | Using SDS, Envoy can discover secrets (certificates and private keys, TLS session ticket keys) for its listeners and configuration for peer certificate validation logic.                                                               |
+| Runtime discovery service (RTDS)                | Using RTDS, Envoy can discover runtime layers dynamically.                                                                                                                                                                               |
+## Aggregated discovery service (ADS)
+
+The discovery services in the table are separate and have different gRPC/REST service names. Using the aggregated discovery service (ADS), we can use a single gRPC service that supports all resource types (listeners, routes, clusters, …) in a single gRPC stream. ADS also ensures the correct sequencing of updates for different resources. Note that ADS only supports gRPC. Without ADS, we’d need to coordinate other gRPC streams to achieve the correct sequence of updates.
+
+## Delta gRPC xDS
+
+Every time we send a resource update, we have to include all resources. For example, every RDS update must contain every route. If we don’t include a route, Envoy considers the route deleted. Doing updates this way results in high bandwidth and computational costs, especially when there are a lot of resources that are being sent over the network. Envoy supports a delta variant of xDS where we can include only resources we want to add/remove/update to improve on this scenario.
