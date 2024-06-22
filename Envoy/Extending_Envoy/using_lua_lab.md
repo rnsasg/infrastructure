@@ -4,9 +4,11 @@ In this lab, we’ll write a Lua script that adds a header to response headers a
 
 We’ll create an Envoy configuration and a Lua script that adds a header to the response handle. Since we won’t use the request path, we don’t have to define the envoy_on_request function. The response function looks like this:
 
+```lua
 function envoy_on_response(response_handle)
   response_handle:headers():add("hello", "world")
 end
+```
 We’re calling the add(<header-name>, <header-value>) function on the headers object returned from the headers() function.
 
 Let’s define this script inline within the Envoy configuration. To simplify the configuration, we’ll use a direct_response, instead of a cluster.
