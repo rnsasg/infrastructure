@@ -16,8 +16,6 @@ deploynginx --version <> --kubeconfig </path/to/file>
 
 This will redeploy the pods with the upgraded version.
 
- 
-
 deploynginx -scale 3--kubeconfig </path/to/file> 
 
 This will scale the number of pods in the deployment to 3.

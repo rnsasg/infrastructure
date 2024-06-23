@@ -1,0 +1,14 @@
+apiVersion: apps.example.com/v1
+kind: ConfigMapSync
+metadata:
+  labels:
+    app.kubernetes.io/name: configmapsync
+    app.kubernetes.io/instance: configmapsync-sample
+    app.kubernetes.io/part-of: configmapsync
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: configmapsync
+  name: configmapsyncs
+spec:
+  sourceNamespace: source
+  destinationNamespace: destination
+  configMapName: sourcecfg

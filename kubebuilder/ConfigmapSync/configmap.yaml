@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sourcecfg
+  namespace: source
+data:
+  # Configuration values
+  app.properties: |
+    database.url=jdbc:mysql://localhost:3306/mydb
+    database.username=root
+    database.password=secret
+  log.properties: |
+    logging.level=INFO
+    logging.file=/var/log/app.log
