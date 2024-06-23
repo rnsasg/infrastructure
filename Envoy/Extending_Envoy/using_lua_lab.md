@@ -1,5 +1,4 @@
 # Lua Lab
-
 In this lab, we’ll write a Lua script that adds a header to response headers and uses a global script defined in a file.
 
 We’ll create an Envoy configuration and a Lua script that adds a header to the response handle. Since we won’t use the request path, we don’t have to define the envoy_on_request function. The response function looks like this:
