@@ -1,0 +1,17 @@
+version: '3'
+services:
+  envoy:
+    build: .
+    ports:
+      - "10000:10000"
+      - "9901:9901"
+    depends_on:
+      - web
+
+  web:
+    image: python:3.9-slim
+    volumes:
+      - ./hello.py:/hello.py
+    command: python /hello.py
+    ports:
+      - "8080:8080"

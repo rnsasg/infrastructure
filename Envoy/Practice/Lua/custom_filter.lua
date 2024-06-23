@@ -8,5 +8,3 @@ function envoy_on_response(response_handle)
     response_handle:logInfo("Lua filter executed for response.")
     response_handle:headers():add("x-response-header", "response_value")
 end
-
-

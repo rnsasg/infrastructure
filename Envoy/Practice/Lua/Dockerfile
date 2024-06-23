@@ -1,6 +1,9 @@
 # Use the official Envoy Docker image
 FROM envoyproxy/envoy:v1.21.0
 
+# Install curl and dnsutils
+RUN apt-get update && apt-get install -y curl dnsutils
+
 # Copy the Envoy configuration file
 COPY envoy.yaml /etc/envoy/envoy.yaml
 
