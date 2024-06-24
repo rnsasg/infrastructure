@@ -97,13 +97,19 @@ static_resources:
 
 Save the above YAML to 7-lab-1-tap-filter-1.yaml file and run it using func-e CLI:
 
+```shell
 func-e run -c 7-lab-1-tap-filter-1.yaml &
+```
+
 If we send a request to http://localhost:10000, we’ll receive the response that matches the first route (HTTP 200 and body hello). The request won’t be tapped because we didn’t provide any headers, nor did the response body contain the value error.
 
 Let’s try setting the debug header and sending a request to /error endpoint:
 
+```shell
 $ curl -H "debug: true" localhost:10000/error
 error
+```
+
 This time, a JSON file with the contents of the tapped request is created in the same folder. Here’s how the contents of that file should look:
 
 ```json
@@ -240,7 +246,10 @@ This time, we’re using the admin_config field and specifying the configuration
 
 Save the above YAML to 7-lab-1-tap-filter-2.yaml and run it using func-e CLI:
 
+```shell
 func-e run -c 7-lab-1-tap-filter-2.yaml &
+```
+
 We’ll get the expected responses if we try sending the requests to the / and error paths. We have to send a POST request to the /tap endpoint with the tap configuration to enable the request tapping.
 
 Let’s use this tap configuration that matches any request:
@@ -270,7 +279,10 @@ We’re also using the streaming_admin field as the output sink, which means tha
 
 Let’s save the above JSON to tap-config-any.json and then use cURL to send a POST request to the /tap endpoint:
 
+```shell
 curl -X POST -d @tap-config-any.json http://localhost:9901/tap
+```
+
 We’ll open a second terminal window and send a cURL request to localhost:10000 to test the configuration. Since we’re matching on all requests, we’ll see the streamed tapped output in the first terminal window:
 
 ```json
@@ -357,3 +369,140 @@ We’ll open a second terminal window and send a cURL request to localhost:10000
  }
 }
 ```
+
+## files
+
+### tapconfigany
+
+```json
+{
+  "config_id": "my_tap_id",
+  "tap_config": {
+    "match": {
+      "any_match": true
+    },
+    "output_config": {
+      "sinks": [
+        {
+          "streaming_admin": {}
+        }
+      ]
+    }
+  }
+}
+```
+
+### 7-lab-1-tap-filter-2.yaml
+
+```yaml
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: ingress_http
+          http_filters:
+          - name: envoy.filters.http.tap
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.tap.v3.Tap
+              common_config:
+                static_config:
+                  match:
+                    and_match:
+                      rules:
+                        - http_request_headers_match:
+                            headers:
+                              name: debug
+                              string_match:
+                                exact: "true"
+                        - http_response_generic_body_match:
+                            patterns:
+                              - string_match: error
+                  output_config:
+                    sinks:
+                      - format: JSON_BODY_AS_STRING
+                        file_per_tap:
+                          path_prefix: tap_debug
+          - name: envoy.filters.http.router
+            typed_config: 
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  path: "/"
+                direct_response:
+                  status: 200
+                  body:
+                    inline_string: hello
+              - match:
+                  path: "/error"
+                direct_response:
+                  status: 500
+                  body:
+                    inline_string: error
+```
+
+### 7-lab-1-tap-filter-1.yaml
+
+```yaml
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: ingress_http
+          http_filters:
+          - name: envoy.filters.http.tap
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.tap.v3.Tap
+              common_config:
+                admin_config:
+                  config_id: my_tap_id
+          - name: envoy.filters.http.router
+            typed_config: 
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  path: "/"
+                direct_response:
+                  status: 200
+                  body:
+                    inline_string: hello
+              - match:
+                  path: "/error"
+                direct_response:
+                  status: 500
+                  body:
+                    inline_string: error
+admin:
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 9901
+```
+
+
+
