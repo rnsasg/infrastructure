@@ -24,6 +24,8 @@ type pluginContext struct {
 	// Embed the default plugin context here,
 	// so that we don't need to reimplement all the methods.
 	types.DefaultPluginContext
+	additionalHeaders map[string]string
+	contextID         uint32
 }
 
 // Override types.DefaultPluginContext.
@@ -45,6 +47,10 @@ func (ctx *httpHeaders) OnHttpRequestHeaders(numHeaders int, endOfStream bool) t
 
 func (ctx *httpHeaders) OnHttpResponseHeaders(numHeaders int, endOfStream bool) types.Action {
 	proxywasm.LogInfo("OnHttpResponseHeaders")
+	err := proxywasm.AddHttpResponseHeader("my-new-header", "some-value-here")
+	if err != nil {
+		proxywasm.LogCriticalf("failed to add response header: %v", err)
+	}
 	return types.ActionContinue
 }
 

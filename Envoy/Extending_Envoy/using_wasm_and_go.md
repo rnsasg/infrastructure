@@ -227,11 +227,16 @@ type pluginContext struct {
   additionalHeaders map[string]string
   contextID         uint32
 }
+```
 Update the NewPluginContext function to initialize the values:
+```go
 func (*vmContext) NewPluginContext(contextID uint32) types.PluginContext {
   return &pluginContext{contextID: contextID, additionalHeaders: map[string]string{}}
 }
+```
+
 In the OnPluginStart function, we can now read in values from the Envoy configuration and store the key/value pairs in the additionalHeaders map:
+
 ```go
 func (ctx *pluginContext) OnPluginStart(pluginConfigurationSize int) types.OnPluginStartStatus {
   // Get the plugin configuration
