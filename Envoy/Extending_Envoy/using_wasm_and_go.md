@@ -88,14 +88,14 @@ func (ctx *httpHeaders) OnHttpStreamDone() {
 ```
 
 Save the above contents to a file called main.go.
-
 Let’s build the filter to check that everything is good:
 
+```shell
 tinygo build -o main.wasm -scheduler=none -target=wasi main.go
+```
+
 The build command should run successfully and generate a file called main.wasm.
-
 We’ll use func-e to run a local Envoy instance to test our built extension.
-
 First, we need an Envoy config that will configure the extension:
 
 ```yaml
@@ -154,7 +154,10 @@ The Envoy configuration sets up a single listener on port 10000 that returns a d
 
 Let’s run Envoy with this configuration in the background:
 
+```shell
 func-e run -c 8-lab-2-wasm-config.yaml &
+```
+
 The Envoy instance should start without any issues. Once it’s started, we can send a request to the port Envoy is listening on (10000):
 
 ```shell
@@ -170,8 +173,8 @@ The output shows the two log entries: one from the OnHttpRequestHeaders handler 
 You can stop the proxy by bringing the process to the foreground with fg and pressing CTRL+C to stop it.
 
 ## Setting additional headers on HTTP response
-Let’s open the main.go file and add a header to the response headers. We’ll be updating the OnHttpResponseHeaders function to do that.
 
+Let’s open the main.go file and add a header to the response headers. We’ll be updating the OnHttpResponseHeaders function to do that.
 We’ll call the AddHttpResponseHeader function to add a new header. Update the OnHttpResponseHeaders function to look like this:
 
 ```go
@@ -187,10 +190,16 @@ func (ctx *httpHeaders) OnHttpResponseHeaders(numHeaders int, endOfStream bool) 
 
 Let’s rebuild the extension:
 
+```shell
 tinygo build -o main.wasm -scheduler=none -target=wasi main.go
+```
+
 And we can now re-run the Envoy proxy with the updated extension:
 
+```shell
 func-e run -c 8-lab-2-wasm-config.yaml &
+```
+
 Now, if we send a request again (make sure to add the -v flag), we’ll see the header that got added to the response:
 
 ```shell
@@ -223,6 +232,7 @@ func (*vmContext) NewPluginContext(contextID uint32) types.PluginContext {
   return &pluginContext{contextID: contextID, additionalHeaders: map[string]string{}}
 }
 In the OnPluginStart function, we can now read in values from the Envoy configuration and store the key/value pairs in the additionalHeaders map:
+```go
 func (ctx *pluginContext) OnPluginStart(pluginConfigurationSize int) types.OnPluginStartStatus {
   // Get the plugin configuration
   config, err := proxywasm.GetPluginConfiguration()
@@ -245,8 +255,11 @@ func (ctx *pluginContext) OnPluginStart(pluginConfigurationSize int) types.OnPlu
   }
   return types.OnPluginStartStatusOK
 }
+```
+
 To access the configuration values we’ve set, we need to add the map to the HTTP context when we initialize it. To do that, we need to update the httpheaders struct first:
 
+```go
 type httpHeaders struct {
   // Embed the default http context here,
   // so that we don't need to reimplement all the methods.
@@ -254,13 +267,17 @@ type httpHeaders struct {
   contextID         uint32
   additionalHeaders map[string]string
 }
+```
 Then, in the NewHttpContext function, we can instantiate the httpHeaders with the additional headers map coming from the plugin context:
 
+```go
 func (ctx *pluginContext) NewHttpContext(contextID uint32) types.HttpContext {
   return &httpHeaders{contextID: contextID, additionalHeaders: ctx.additionalHeaders}
 }
+```
 Finally, to set the headers we modify the OnHttpResponseHeaders function, iterate through the additionalHeaders map, and call the AddHttpResponseHeader for each item:
 
+```go
 func (ctx *httpHeaders) OnHttpResponseHeaders(numHeaders int, endOfStream bool) types.Action {
   proxywasm.LogInfo("OnHttpResponseHeaders")
 
