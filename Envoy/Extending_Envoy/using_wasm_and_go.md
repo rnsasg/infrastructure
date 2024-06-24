@@ -4,7 +4,7 @@ In this lab, we’ll use [TinyGo](https://tinygo.org/),[proxy-wasm-go-sdk](https
 
 We’ll write a simple Wasm module that adds a header to response headers. Later, we’ll show how to read configuration and add custom metrics. We’ll use Golang and compile it with the TinyGo compiler.
 
-Installing TinyGo
+## Installing TinyGo
 Let’s download and install TinyGo:
 
 ```shell
@@ -19,7 +19,7 @@ $ tinygo version
 tinygo version 0.21.0 linux/amd64 (using go version go1.17.2 and LLVM version 11.0.0)
 ```
 
-Scaffolding the Wasm module
+## Scaffolding the Wasm module
 We’ll start by creating a new folder for our extension, initializing the Go module, and downloading the SDK dependency:
 
 ```shell

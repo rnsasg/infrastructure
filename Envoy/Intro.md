@@ -35,7 +35,8 @@ Envoy is an L3/L4 network proxy that makes decisions based on IP addresses and T
 
 A filter chain comes from a shell idea where the output of one operation is piped into another operation. For example:
 
-ls -l | grep "Envoy*.cc" | wc -l
+> ls -l | grep "Envoy*.cc" | wc -l
+
 Envoy can construct logic and behavior by stacking desired filters that form a filter chain. Many filters exist and support tasks such as raw TCP proxy, UDP proxy, HTTP proxy, TLS client cert authentication, etc. Envoy is also extensible, and we can write our filters.
 
 ## L7 filter architecture
