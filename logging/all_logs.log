@@ -1,0 +1,5 @@
+time="2024-12-18T20:10:34+05:30" level=info msg="This is a normal info message"
+time="2024-12-18T20:10:34+05:30" level=warning msg="This is a warning message"
+time="2024-12-18T20:10:34+05:30" level=error msg="This is an error message"
+time="2024-12-18T20:10:34+05:30" level=info msg="This is an important message that should go to the keyword log"
+time="2024-12-18T20:10:34+05:30" level=info msg="This is a critical alert"
